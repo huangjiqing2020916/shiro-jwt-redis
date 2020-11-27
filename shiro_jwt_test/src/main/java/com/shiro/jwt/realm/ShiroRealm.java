@@ -5,6 +5,7 @@ import com.shiro.jwt.service.RealmUserService;
 import com.shiro.jwt.util.JWTTokenUtil;
 import com.shiro.jwt.util.JwtToken;
 import com.shiro.jwt.util.RedisUtil;
+import com.shiro.jwt.util.UniversalExpression;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -65,7 +66,7 @@ public class ShiroRealm extends AuthorizingRealm {
         // 校验token有效性
         RealmUser loginUser = this.checkUserTokenIsEffect(token);
         if (loginUser == null) {
-            new AuthenticationException("用户不存在");
+            new AuthenticationException(UniversalExpression.MenuType.USERNOTEXIST.getValue());
         }
         return new SimpleAuthenticationInfo(loginUser, token, getName());
     }
@@ -76,21 +77,20 @@ public class ShiroRealm extends AuthorizingRealm {
      * @param token
      */
     public RealmUser checkUserTokenIsEffect(String token) throws AuthenticationException {
-        String existToken = String.valueOf(redisUtil.get("PREFIX_USER_TOKEN_" + token));
+        String existToken = String.valueOf(redisUtil.get(UniversalExpression.Key.REDISKEY.getValue() + token));
         if (existToken != null && !"".equals(existToken) && !"null".equals(existToken)) {
-            int minute = 2;
-            redisUtil.expire("PREFIX_USER_TOKEN_" + token, minute);
+            redisUtil.expire(UniversalExpression.Key.REDISKEY.getValue() + token, UniversalExpression.Variable.NEWREDISTIME.getValue());
             String username = JWTTokenUtil.getUsername(token);
 
             // 查询用户信息
             RealmUser sysUser = userService.queryUserByUsername(username);
             if (sysUser == null) {
-                log.error("用户不存在");
-                throw new AuthenticationException("用户不存在");
+                log.error(UniversalExpression.MenuType.USERNOTEXIST.getValue());
+                throw new AuthenticationException(UniversalExpression.MenuType.USERNOTEXIST.getValue());
             }
             return sysUser;
         } else {
-            log.error("用户不存在");
+            log.error(UniversalExpression.MenuType.TOKENERROR.getValue());
             throw new AuthenticationException();
         }
     }

@@ -1,7 +1,7 @@
 package com.shiro.jwt.controller;
 
 import com.shiro.jwt.util.R;
-import org.apache.shiro.authc.AuthenticationException;
+import com.shiro.jwt.util.UniversalExpression;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.web.bind.annotation.*;
@@ -11,20 +11,15 @@ public class CommonController {
     @ResponseBody
     @ExceptionHandler(UnauthorizedException.class)
     public R handleShiroException(Exception ex) {
-        return R.error("您没有权限访问此页面");
+        return R.error(UniversalExpression.MenuType.NOAUTHORITY.getValue());
     }
 
     @ResponseBody
     @ExceptionHandler(AuthorizationException.class)
     public R authorizationException(Exception ex) {
-        return R.error("请先登录");
+        return R.error(UniversalExpression.MenuType.NOTLOGGEDIN.getValue());
     }
 
-    @ResponseBody
-    @ExceptionHandler(AuthenticationException.class)
-    public String authenticationException(Exception ex) {
-        return "token异常";
-    }
 }
 
 

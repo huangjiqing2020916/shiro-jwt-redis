@@ -3,6 +3,7 @@ package com.shiro.jwt.filter;
 import com.shiro.jwt.util.JsonUtil;
 import com.shiro.jwt.util.JwtToken;
 import com.shiro.jwt.util.R;
+import com.shiro.jwt.util.UniversalExpression;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
@@ -47,7 +48,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String token = httpServletRequest.getHeader("token");
+        String token = httpServletRequest.getHeader(UniversalExpression.Key.TOKEN.getValue());
         JwtToken jwtToken = new JwtToken(token);
         try {
             // 提交给realm进行登入，如果错误他会抛出异常并被捕获
@@ -68,7 +69,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletResponse httpResponse = WebUtils.toHttp(response);
         httpResponse.setContentType("application/json;charset=UTF-8");
         httpResponse.setCharacterEncoding("UTF-8");
-        R r = R.error(500, "token异常");
+        R r = R.error(500, UniversalExpression.MenuType.TOKENERROR.getValue());
         try {
             httpResponse.getWriter().print(JsonUtil.obj2String(r));
         } catch (IOException e) {

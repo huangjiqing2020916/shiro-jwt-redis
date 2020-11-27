@@ -20,7 +20,7 @@ public class R extends HashMap<String, Object> {
 	}
 	
 	public static com.shiro.jwt.util.R error() {
-		return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, "未知异常，请联系管理员");
+		return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, UniversalExpression.MenuType.UNKNOWNEXCEPTION.getValue());
 	}
 	
 	public static com.shiro.jwt.util.R error(String msg) {

@@ -141,15 +141,7 @@ class ShiroJwtTestApplicationTests {
     }
 
 
-    @Test
-    void time (){
-        String token =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDYzNjI2NDMsInVzZXJuYW1lIjoiaGpxIn0.WPulbSfg7ROMORNvK4o3wSc1ZfUDlLzIekR7FmOYJ5Y"
-                ;
-        System.err.println(JWT.decode(token).getExpiresAt());
-        String existToken = String.valueOf(redisUtil.get("PREFIX_USER_TOKEN_" + token));
-        System.err.println(existToken);
-    }
+
 
 
 
