@@ -20,6 +20,10 @@ public class CommonController {
         return R.error(UniversalExpression.MenuType.NOTLOGGEDIN.getValue());
     }
 
+    @RequestMapping("/common/noauth")
+    public R noauth (){
+        return R.error(UniversalExpression.MenuType.NOAUTHORITY.getValue());
+    }
 }
 
 

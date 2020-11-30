@@ -27,15 +27,19 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
+
         filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
         filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
+//        filterChainDefinitionMap.put("/user/add", "perms[user:add]");
+//        filterChainDefinitionMap.put("/user/update", "perms[user:update]");
+
         Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("jwt", new JwtFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
         filterChainDefinitionMap.put("/**", "jwt");
 
         // 未授权
-//        shiroFilterFactoryBean.setUnauthorizedUrl("/common/noauth");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/common/noauth");
         //未登陆
         shiroFilterFactoryBean.setLoginUrl("/common/noLogin");
 

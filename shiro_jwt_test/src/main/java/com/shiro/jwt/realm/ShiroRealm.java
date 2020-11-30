@@ -45,6 +45,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        System.err.println("授权");
         //验证权限时
         RealmUser sysUser = null;
         String username = null;
@@ -53,6 +54,7 @@ public class ShiroRealm extends AuthorizingRealm {
             username = sysUser.getUsername();
         }
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        System.err.println(sysUser.getPerms());
         info.addStringPermission(sysUser.getPerms());
 
         return info;
@@ -60,6 +62,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
+        System.err.println("认证");
         //验证token时
         String token = (String) auth.getCredentials();
 //        }
