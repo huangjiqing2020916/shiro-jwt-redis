@@ -1,7 +1,7 @@
 package com.shiro.jwt.controller;
 
-import com.shiro.jwt.entity.RealmUser;
-import com.shiro.jwt.service.RealmUserService;
+import com.shiro.jwt.entity.TUser;
+import com.shiro.jwt.service.SysService;
 import com.shiro.jwt.util.*;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +19,18 @@ public class SysController {
 
 
     @Autowired
-    private RealmUserService rService;
+    private SysService rService;
 
     @Autowired
     private RedisUtil redisUtil;
 
 
     @PostMapping("/login")
-    public String login(@RequestBody RealmUser realmUser) {
+    public String login(@RequestBody TUser tUser) {
         String token = "";
-        String username = realmUser.getUsername();
-        String password = realmUser.getPassword();
-        RealmUser user = rService.queryUserByUsername(username);
+        String username = tUser.getUsername();
+        String password = tUser.getPassword();
+        TUser user = rService.queryUserByUsername(username);
 
         if (user == null) {
             return UniversalExpression.MenuType.USERNAMENOTEXIST.getValue();
@@ -44,7 +44,6 @@ public class SysController {
             }
         }
         SecurityUtils.getSubject().isAuthenticated();
-        System.err.println("2是否认证成功:"+ SecurityUtils.getSubject().isAuthenticated());
         return token;
     }
 

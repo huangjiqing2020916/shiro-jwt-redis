@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shiro.jwt.mapper.SysMapper">
+
+    <resultMap id="realmUserResult" type="com.shiro.jwt.entity.TUser">
+        <result column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+    </resultMap>
+
+    <select id="selectUserByUsername" parameterType="java.lang.String" resultType="TUser">
+        select * from t_user where username = #{username}
+    </select>
+
+    <resultMap id="role" type="com.shiro.jwt.entity.TRole">
+        <result column="role_id" property="roleId"/>
+        <result column="rolename" property="rolename"/>
+    </resultMap>
+
+    <select id="selectRoleByUser" resultMap="role" parameterType="Long">
+        select r.* from t_role r
+            left join user_role ur on r.role_id=ur.role_id
+        where ur.user_id=#{userId}
+    </select>
+
+    <resultMap id="permission" type="com.shiro.jwt.entity.TPermission">
+        <result column="permission_id" property="permissionId"/>
+        <result column="permissionname" property="permissionname"/>
+    </resultMap>
+
+    <select id="selectPermissionByRole" resultMap="permission" parameterType="Long">
+        select p.permission_id,p.permissionname from t_permission p
+            right join role_permission rp on p.permission_id=rp.permission_id
+        where rp.role_id=#{roleId}
+    </select>
+
+
+</mapper>

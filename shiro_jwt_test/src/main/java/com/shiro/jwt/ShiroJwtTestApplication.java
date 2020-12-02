@@ -21,11 +21,10 @@ public class ShiroJwtTestApplication {
     public static void main(String[] args) throws UnknownHostException {
         SpringApplication.run(ShiroJwtTestApplication.class, args);
         InetAddress ip4 = Inet4Address.getLocalHost();
-        log.warn("Shiro+JWT+Redis核心架构:\t"+ip4.getHostAddress() + "/" + "8080/"+"sys/login");
+        log.warn("Shiro+JWT+Redis核心架构:\t" + ip4.getHostAddress() + "/" + "8080/" + "sys/login");
         log.warn("{" +
                 "\"username\":\"\"," +
                 "\"password\":\"\"" +
                 "}");
     }
-
 }

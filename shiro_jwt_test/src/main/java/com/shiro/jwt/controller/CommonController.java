@@ -1,12 +1,11 @@
 package com.shiro.jwt.controller;
 
 import com.shiro.jwt.util.R;
-import com.shiro.jwt.util.UniversalExpression;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@ControllerAdvice
 public class CommonController {
     @ResponseBody
     @ExceptionHandler(UnauthorizedException.class)

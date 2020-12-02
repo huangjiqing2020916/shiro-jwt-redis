@@ -1,7 +1,9 @@
 package com.shiro.jwt.realm;
 
-import com.shiro.jwt.entity.RealmUser;
-import com.shiro.jwt.service.RealmUserService;
+import com.shiro.jwt.entity.TPermission;
+import com.shiro.jwt.entity.TRole;
+import com.shiro.jwt.entity.TUser;
+import com.shiro.jwt.service.SysService;
 import com.shiro.jwt.util.JWTTokenUtil;
 import com.shiro.jwt.util.JwtToken;
 import com.shiro.jwt.util.RedisUtil;
@@ -19,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 /**
  * @author huangjiqing
@@ -29,7 +33,7 @@ import org.springframework.stereotype.Component;
 public class ShiroRealm extends AuthorizingRealm {
 
     @Autowired
-    private RealmUserService userService;
+    private SysService userService;
 
     @Autowired
     @Lazy
@@ -37,13 +41,11 @@ public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-        System.err.println("认证");
-        System.err.println(auth.getCredentials());
         //验证token时
         String token = (String) auth.getCredentials();
 //        }
         // 校验token有效性
-        RealmUser loginUser = this.checkUserTokenIsEffect(token);
+        TUser loginUser = this.checkUserTokenIsEffect(token);
         if (loginUser == null) {
             new AuthenticationException(UniversalExpression.MenuType.USERNOTEXIST.getValue());
         }
@@ -58,17 +60,22 @@ public class ShiroRealm extends AuthorizingRealm {
         return token instanceof JwtToken;
     }
 
+
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        System.err.println("授权");
         // 校验token有效性
-        RealmUser sysUser = this.checkUserTokenIsEffect((String) principals.getPrimaryPrincipal());
-
+        TUser sysUser = this.checkUserTokenIsEffect((String) principals.getPrimaryPrincipal());
         //验证权限时
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-        System.err.println(sysUser.getPerms());
-        info.addStringPermission(sysUser.getPerms());
 
+        List<TRole> roles = userService.queryRoleByUser(sysUser.getUserId());
+        roles.forEach(r -> {
+            info.addRole(r.getRolename());
+            List<TPermission> permissions = userService.queryPermissionByRole(r.getRoleId());
+            permissions.forEach(p -> {
+                info.addStringPermission(p.getPermissionname());
+            });
+        });
         return info;
     }
 
@@ -78,14 +85,14 @@ public class ShiroRealm extends AuthorizingRealm {
      *
      * @param token
      */
-    public RealmUser checkUserTokenIsEffect(String token) throws AuthenticationException {
+    public TUser checkUserTokenIsEffect(String token) throws AuthenticationException {
         String existToken = String.valueOf(redisUtil.get(UniversalExpression.Key.REDISKEY.getValue() + token));
         if (existToken != null && !"".equals(existToken) && !"null".equals(existToken)) {
             redisUtil.expire(UniversalExpression.Key.REDISKEY.getValue() + token, UniversalExpression.Variable.NEWREDISTIME.getValue());
             String username = JWTTokenUtil.getUsername(token);
 
             // 查询用户信息
-            RealmUser sysUser = userService.queryUserByUsername(username);
+            TUser sysUser = userService.queryUserByUsername(username);
             if (sysUser == null) {
                 log.error(UniversalExpression.MenuType.USERNOTEXIST.getValue());
                 throw new AuthenticationException(UniversalExpression.MenuType.USERNOTEXIST.getValue());

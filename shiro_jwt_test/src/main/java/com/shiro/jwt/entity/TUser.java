@@ -8,15 +8,13 @@ import java.io.Serializable;
  * @author huangjiqing
  * @date 2020/11/17 10:01
  */
-@TableName("realm_user")
+@TableName("t_user")
 @Data
-public class RealmUser implements Serializable{
+public class TUser implements Serializable{
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private Long userId;
     private String username;
     private String password;
-    private String perms;
-    private String address;
 
 }

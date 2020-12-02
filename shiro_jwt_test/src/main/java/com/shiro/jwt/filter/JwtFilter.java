@@ -50,21 +50,17 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader(UniversalExpression.Key.TOKEN.getValue());
-        System.err.println("http:"+token);
         if (token != null && token != "" & token != "null") {
-            System.err.println("httptoken!=null");
             JwtToken jwtToken = new JwtToken(token);
             try {
                 // 提交给realm进行登入，如果错误他会抛出异常并被捕获
                 getSubject(request, response).login(jwtToken);
-                System.err.println("1是否认证成功:" + SecurityUtils.getSubject().isAuthenticated());
                 // 如果没有抛出异常则代表登入成功，返回true
                 return true;
             } catch (AuthenticationException e) {
                 return false;
             }
         }
-        System.err.println("httptoken!=null");
         return false;
     }
 
