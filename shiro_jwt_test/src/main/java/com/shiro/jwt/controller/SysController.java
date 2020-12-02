@@ -1,9 +1,9 @@
 package com.shiro.jwt.controller;
 
 import com.shiro.jwt.entity.RealmUser;
-import com.shiro.jwt.exeception.RRException;
 import com.shiro.jwt.service.RealmUserService;
 import com.shiro.jwt.util.*;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +43,8 @@ public class SysController {
                 redisUtil.set(UniversalExpression.Key.REDISKEY.getValue() + token, token, JWTTokenUtil.REDIS_TIME);//time=秒
             }
         }
+        SecurityUtils.getSubject().isAuthenticated();
+        System.err.println("2是否认证成功:"+ SecurityUtils.getSubject().isAuthenticated());
         return token;
     }
 

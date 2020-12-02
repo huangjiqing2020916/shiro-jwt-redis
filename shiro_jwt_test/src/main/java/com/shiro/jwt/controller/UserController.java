@@ -1,5 +1,6 @@
 package com.shiro.jwt.controller;
 
+import com.shiro.jwt.exeception.RRException;
 import com.shiro.jwt.util.JWTTokenUtil;
 import com.shiro.jwt.util.R;
 import com.shiro.jwt.util.UniversalExpression;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("user")
 public class UserController {
 
-    @RequiresPermissions("user:add")
+    //    @RequiresPermissions("user:add")
     @RequestMapping("/add")
     public R add(HttpServletRequest request) {
         String token = request.getHeader(UniversalExpression.Key.TOKEN.getValue());
@@ -25,7 +26,7 @@ public class UserController {
         return R.ok().put("add", "add").put("username", username);
     }
 
-    @RequiresPermissions("user:update")
+    //    @RequiresPermissions("user:update")
     @RequestMapping("/update")
     public R update(HttpServletRequest request) {
         String token = request.getHeader(UniversalExpression.Key.TOKEN.getValue());

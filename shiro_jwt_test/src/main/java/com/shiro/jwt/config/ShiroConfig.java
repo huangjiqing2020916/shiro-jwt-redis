@@ -9,6 +9,7 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,20 +29,21 @@ public class ShiroConfig {
 
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 
-        filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
-        filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
-//        filterChainDefinitionMap.put("/user/add", "perms[user:add]");
-//        filterChainDefinitionMap.put("/user/update", "perms[user:update]");
-
         Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("jwt", new JwtFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
+
+        filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
+        filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
+        filterChainDefinitionMap.put("/user/add", "perms[user:add]");
+        filterChainDefinitionMap.put("/user/update", "perms[user:update]");
+
         filterChainDefinitionMap.put("/**", "jwt");
 
-        // 未授权
+        //未授权
         shiroFilterFactoryBean.setUnauthorizedUrl("/common/noauth");
-        //未登陆
-        shiroFilterFactoryBean.setLoginUrl("/common/noLogin");
+        //没登录
+//        shiroFilterFactoryBean.setLoginUrl("/common/noLogin");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
@@ -50,12 +52,12 @@ public class ShiroConfig {
     @Bean("securityManager")
     public DefaultWebSecurityManager securityManager(ShiroRealm myRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(myRealm);
         DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
         DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
         defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
         subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
         securityManager.setSubjectDAO(subjectDAO);
+        securityManager.setRealm(myRealm);
         return securityManager;
     }
 

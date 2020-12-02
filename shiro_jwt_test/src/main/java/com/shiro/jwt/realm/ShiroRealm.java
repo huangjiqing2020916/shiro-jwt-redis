@@ -35,6 +35,21 @@ public class ShiroRealm extends AuthorizingRealm {
     @Lazy
     private RedisUtil redisUtil;
 
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
+        System.err.println("认证");
+        System.err.println(auth.getCredentials());
+        //验证token时
+        String token = (String) auth.getCredentials();
+//        }
+        // 校验token有效性
+        RealmUser loginUser = this.checkUserTokenIsEffect(token);
+        if (loginUser == null) {
+            new AuthenticationException(UniversalExpression.MenuType.USERNOTEXIST.getValue());
+        }
+        return new SimpleAuthenticationInfo(token, token, getName());
+    }
+
     /**
      * 必须重写此方法，不然Shiro会报错
      */
@@ -46,13 +61,10 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         System.err.println("授权");
+        // 校验token有效性
+        RealmUser sysUser = this.checkUserTokenIsEffect((String) principals.getPrimaryPrincipal());
+
         //验证权限时
-        RealmUser sysUser = null;
-        String username = null;
-        if (principals != null) {
-            sysUser = (RealmUser) principals.getPrimaryPrincipal();
-            username = sysUser.getUsername();
-        }
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         System.err.println(sysUser.getPerms());
         info.addStringPermission(sysUser.getPerms());
@@ -60,19 +72,6 @@ public class ShiroRealm extends AuthorizingRealm {
         return info;
     }
 
-    @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-        System.err.println("认证");
-        //验证token时
-        String token = (String) auth.getCredentials();
-//        }
-        // 校验token有效性
-        RealmUser loginUser = this.checkUserTokenIsEffect(token);
-        if (loginUser == null) {
-            new AuthenticationException(UniversalExpression.MenuType.USERNOTEXIST.getValue());
-        }
-        return new SimpleAuthenticationInfo(loginUser, token, getName());
-    }
 
     /**
      * 校验token的有效性
